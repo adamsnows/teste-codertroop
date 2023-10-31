@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://portal-api-campeoes.herokuapp.com/",
+  baseURL: "http://localhost:3001",
 });
 
 if (typeof window !== "undefined") {

@@ -1,12 +1,11 @@
 import React from "react";
-import Background from "../components/Background/styles";
 import Register from "../components/Register";
 
 const RegisterPage = () => {
   return (
-    <Background>
+    <div className="max-w-full min-h-screen flex justify-center items-center backgroundImage bg-bluepattern bg-no-repeat bg-cover">
       <Register />
-    </Background>
+    </div>
   );
 };
 
