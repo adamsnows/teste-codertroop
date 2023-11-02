@@ -7,9 +7,9 @@ import {
 import {
   getDatabase,
   ref,
-  push,
-  set,
   onValue,
+  set,
+  push,
   remove,
 } from "firebase/database";
 
@@ -26,18 +26,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
-
-// Coleta de informações de interação
-const interaction = {
-  username: "Nome do Usuário",
-  x: mouseX,
-  y: mouseY,
-  // outras informações relevantes
-};
-
-// Enviar a interação para o Firebase Realtime Database
-const interactionsRef = ref(db, "interactions");
-push(interactionsRef, interaction);
 
 export {
   auth,

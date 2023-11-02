@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import AddTaskModal from "../Modal/Add";
 import EditTaskModal from "../Modal/Edit";
 import OnlineUsersModal from "../Modal/Users";
@@ -13,6 +13,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { deleteCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import CompleteModal from "../Modal/Complete";
+import MouseCursor from "../Pointer";
 
 const TaskDashboard = () => {
   const {
@@ -73,7 +74,17 @@ const TaskDashboard = () => {
 
   handleInactivity();
 
-  document.addEventListener("click", handleInactivity);
+  useEffect(() => {
+    if (typeof document !== "undefined" && user) {
+      document.addEventListener("click", handleInactivity);
+    }
+
+    return () => {
+      if (typeof document !== "undefined" && user) {
+        document.removeEventListener("click", handleInactivity);
+      }
+    };
+  }, [user]);
 
   const clearInactivityTimeout = () => {
     if (inactivityTimeout) {
@@ -183,6 +194,8 @@ const TaskDashboard = () => {
         setOpen={setCompletedTask}
         task={selectedTask}
       />
+
+      {user && <MouseCursor username={user.email} />}
     </div>
   );
 };
