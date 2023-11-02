@@ -1,75 +1,43 @@
-import { createContext } from "react";
-import { useRouter } from "next/navigation";
-import api from "../services/Api.js";
-import { toast } from "react-toastify";
+import React, { createContext, useContext, useState } from "react";
 
-export const TaskContext = createContext({});
+const TasksContext = createContext();
 
-const PortalProvider = ({ children }) => {
-  const router = useRouter();
+export const TasksProvider = ({ children }) => {
+  const [tasks, setTasks] = useState([]); // Defina seus dados iniciais aqui
+  const [addTask, setAddTask] = useState(false);
+  const [seeTask, setSeeTask] = useState(false);
+  const [editTask, setEditTask] = useState(false);
+  const [deleteTask, setDeleteTask] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState(false);
+  const [filters, setFilters] = useState(false);
+  const [selectedTask, setSelectedTask] = useState({});
 
-  const onSubmit = (data) => console.log(data);
-
-  const onSubmitLogin = (account) => {
-    console.log(account);
-    // api
-    //   .post("/login", account)
-    //   .then((res) => {
-    //     localStorage.setItem("token", res.data.accessToken);
-    //     localStorage.setItem("name", res.data.user.name);
-    //     localStorage.setItem("badges", res.data.user.achievement);
-    //     localStorage.setItem("img", res.data.user.imgProfile);
-    //     localStorage.setItem("discord", res.data.user.discordUser);
-    //     toast.success("Bem vindo, coder!", {
-    //       position: "top-right",
-    //       autoClose: 1000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //       toastId: 1,
-    //     });
-    //     // const element = document.querySelector(".login-register-box");
-    //     // element.classList.add(
-    //     //   "animate__animated",
-    //     //   "animate__fadeOutRight",
-    //     //   "animate__fast"
-    //     // );
-    //     setTimeout(() => {
-    //       // router.push("/choose-your-destiny");
-    //     }, "800");
-    //   })
-    //   .catch((err) => {
-    //     toast.error("Login ou senha incorreto.", {
-    //       position: "top-right",
-    //       autoClose: 2000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //       toastId: 1,
-    //     });
-    //   });
-  };
-
-  const onSubmitRegister = (account) => {
-    console.log(account);
-
-    // account = {
-    //   password: account.password,
-    //   created: new Date(),
-    //   name: account.name,
-    //   email: account.email,
-    //   imgProfile: account.imgProfile,
-    // };
-  };
   return (
-    <TaskContext.Provider value={{ onSubmitLogin, onSubmitRegister, onSubmit }}>
+    <TasksContext.Provider
+      value={{
+        addTask,
+        setAddTask,
+        seeTask,
+        setSeeTask,
+        editTask,
+        setEditTask,
+        deleteTask,
+        setDeleteTask,
+        onlineUsers,
+        setOnlineUsers,
+        filters,
+        setFilters,
+        tasks,
+        setTasks,
+        selectedTask,
+        setSelectedTask,
+      }}
+    >
       {children}
-    </TaskContext.Provider>
+    </TasksContext.Provider>
   );
 };
 
-export default PortalProvider;
+export const useTasksContext = () => {
+  return useContext(TasksContext);
+};

@@ -1,9 +1,12 @@
 import { AiFillEdit } from "react-icons/ai";
 import { BsFillTrashFill } from "react-icons/bs";
 import { DateTime } from "luxon";
+import { useTasksContext } from "@/context/TaskProvider";
 
 const TaskListItem = ({ task, tasks }) => {
-  console.log(task);
+  const { setSeeTask, setEditTask, setDeleteTask, setSelectedTask } =
+    useTasksContext();
+
   return (
     <tr
       className={`${
@@ -26,9 +29,9 @@ const TaskListItem = ({ task, tasks }) => {
         {DateTime.fromISO(task.createdAt).toLocaleString(DateTime.DATETIME_MED)}
       </td>
       <td class="px-6 py-4">{task.createdBy}</td>
-      <td class="px-6 py-4 flex gap-3 items-center">
+      <td class="px-5 py-4 flex gap-3 items-center">
         <AiFillEdit
-          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+          className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
           onClick={() => {
             setSelectedTask(task);
             setEditTask(true);

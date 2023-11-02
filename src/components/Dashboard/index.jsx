@@ -1,22 +1,32 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AddTaskModal from "../Modal/Add";
 import EditTaskModal from "../Modal/Edit";
 import OnlineUsersModal from "../Modal/Users";
 import FiltersModal from "../Modal/Filters";
 import { db, ref, onValue } from "@/services/firebase";
 import SeeTask from "../Modal/Task";
-import TaskList from "./List";
+import TasksList from "./List";
 import DeleteModal from "../Modal/Delete";
+import { TasksProvider, useTasksContext } from "@/context/TaskProvider";
 
 const TaskDashboard = () => {
-  const [addTask, setAddTask] = useState(false);
-  const [seeTask, setSeeTask] = useState(false);
-  const [editTask, setEditTask] = useState(false);
-  const [deleteTask, setDeleteTask] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState(false);
-  const [filters, setFilters] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState({});
+  const {
+    tasks,
+    setTasks,
+    editTask,
+    addTask,
+    setAddTask,
+    seeTask,
+    setSeeTask,
+    onlineUsers,
+    setOnlineUsers,
+    filters,
+    setFilters,
+    setEditTask,
+    selectedTask,
+    deleteTask,
+    setDeleteTask,
+  } = useTasksContext();
 
   useEffect(() => {
     const tasksRef = ref(db, "tasks");
@@ -30,7 +40,7 @@ const TaskDashboard = () => {
         setTasks(tasksArray);
       }
     });
-  }, []);
+  }, [tasks, setTasks]);
 
   const handleAddModal = () => {
     setAddTask(true);
@@ -73,7 +83,7 @@ const TaskDashboard = () => {
         </div>
       </div>
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
-        <TaskList tasks={tasks} />
+        <TasksList tasks={tasks} />
       </div>
 
       <AddTaskModal open={addTask} setOpen={setAddTask} />

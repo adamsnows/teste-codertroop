@@ -4,7 +4,14 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getDatabase, ref, push, set, onValue } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  onValue,
+  remove,
+} from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAWY9WGDZX0KPehCLIGew38VeBK1jzhQM0",
@@ -29,4 +36,5 @@ export {
   push,
   set,
   onValue,
+  remove,
 };

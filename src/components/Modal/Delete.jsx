@@ -1,8 +1,25 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
+import { db, ref, remove } from "@/services/firebase";
+
+import { toast } from "react-toastify";
+
 const DeleteModal = ({ open, setOpen, task }) => {
   const cancelButtonRef = useRef(null);
+
+  const handleDeleteTask = () => {
+    try {
+      const taskRef = ref(db, `tasks/${task.id}`);
+
+      remove(taskRef);
+
+      toast.success("Tarefa deletada com sucesso!");
+      setOpen(false);
+    } catch (error) {
+      console.error("Erro ao deletar a tarefa:", error);
+    }
+  };
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -52,6 +69,7 @@ const DeleteModal = ({ open, setOpen, task }) => {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                    onClick={handleDeleteTask}
                   >
                     Deletar
                   </button>

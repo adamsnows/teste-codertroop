@@ -4,6 +4,7 @@ import { db, ref, push } from "@/services/firebase";
 
 import { toast } from "react-toastify";
 import { getCookie } from "cookies-next";
+import { useTasksContext } from "@/context/TaskProvider";
 
 const AddModal = ({ open, setOpen }) => {
   const cancelButtonRef = useRef(null);
