@@ -15,23 +15,18 @@ export const TasksProvider = ({ children }) => {
   const [selectedTask, setSelectedTask] = useState({});
 
   const disconnectUser = (userId) => {
-    // Aqui você desconecta o usuário que está saindo do aplicativo
     const userRef = ref(db, `onlineUsers/${userId}`);
 
-    // Atualize o status "online" para false
     set(ref(userRef, "online"), false);
   };
 
-  // UseEffect para monitorar os usuários online em tempo real
   useEffect(() => {
     const onlineUsersRef = ref(db, "onlineUsers");
 
-    // Use o evento onValue para monitorar as mudanças em tempo real
     onValue(onlineUsersRef, (snapshot) => {
       if (snapshot.exists()) {
         const onlineUsersData = snapshot.val();
 
-        // Conte quantos usuários estão online (campo "online" é verdadeiro)
         const onlineCount = Object.values(onlineUsersData).filter(
           (user) => user.online
         ).length;
@@ -41,9 +36,7 @@ export const TasksProvider = ({ children }) => {
     });
 
     return () => {
-      // Remova o ouvinte quando o componente é desmontado
-      // Isso evita vazamentos de memória e recursos
-      // Desconecte o usuário que sai do aplicativo aqui
+      // desconectar users
     };
   }, [setOnlineUsers]);
 
