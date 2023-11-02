@@ -27,6 +27,7 @@ const Login = () => {
       console.log("Usuário logado:", user);
       toast.success("Logado com sucesso!");
       setCookie("token", user.accessToken);
+      setCookie("user-email", user.email);
       router.push("/dashboard");
     } catch (error) {
       console.error("Erro ao fazer login:", error);
@@ -35,7 +36,7 @@ const Login = () => {
   };
 
   return (
-    <div className="p-10 bg-slate-800 rounded-lg flex flex-col">
+    <div className="p-10 bg-slate-900 bg-opacity-90 rounded-lg flex flex-col">
       <div className="flex flex-col gap-4">
         <span className="text-5xl font-bold text-center">CoderTroop</span>
         <span className="text-sm text-center">

@@ -25,3 +25,27 @@ input {
     rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
   color: #9c9c9c;
 }
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+  animation-iteration-count: 3;
+  border-color: red;
+}
+
+@keyframes shake {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-5px, 0);
+  }
+  50% {
+    transform: translate(5px, 0);
+  }
+  75% {
+    transform: translate(-5px, 0);
+  }
+  100% {
+    transform: translate(5px, 0);
+  }
+}

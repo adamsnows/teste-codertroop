@@ -8,7 +8,7 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <Component {...pageProps} />
-      <ToastContainer />
+      <ToastContainer theme="dark" />
     </>
   );
 }

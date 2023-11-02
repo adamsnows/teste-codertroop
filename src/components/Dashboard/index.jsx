@@ -1,75 +1,97 @@
 import { useEffect, useState } from "react";
-import { database } from "@/services/firebase";
-import { FcDataConfiguration } from "react-icons/fc";
-import Modal from "../Modal";
-const TaskList = () => {
-  const [open, setOpen] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [newTask, setNewTask] = useState("");
+import AddTaskModal from "../Modal/Add";
+import EditTaskModal from "../Modal/Edit";
+import OnlineUsersModal from "../Modal/Users";
+import FiltersModal from "../Modal/Filters";
+import { db, ref, onValue } from "@/services/firebase";
+import SeeTask from "../Modal/Task";
+import TaskList from "./List";
+import DeleteModal from "../Modal/Delete";
 
-  // Função para adicionar uma nova tarefa
-  const addTask = async (e) => {
-    e.preventdefault();
-    if (newTask.trim() !== "") {
-      try {
-        await database.collection("tasks").add({
-          text: newTask,
-          completed: false,
-        });
-        setNewTask("");
-      } catch (error) {
-        console.error("Erro ao adicionar tarefa:", error);
+const TaskDashboard = () => {
+  const [addTask, setAddTask] = useState(false);
+  const [seeTask, setSeeTask] = useState(false);
+  const [editTask, setEditTask] = useState(false);
+  const [deleteTask, setDeleteTask] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState(false);
+  const [filters, setFilters] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [selectedTask, setSelectedTask] = useState({});
+
+  useEffect(() => {
+    const tasksRef = ref(db, "tasks");
+    onValue(tasksRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const tasksData = snapshot.val();
+        const tasksArray = Object.entries(tasksData).map(([taskId, task]) => ({
+          id: taskId,
+          ...task,
+        }));
+        setTasks(tasksArray);
       }
-    }
+    });
+  }, []);
+
+  const handleAddModal = () => {
+    setAddTask(true);
   };
 
-  // useEffect(() => {
-  //   const unsubscribe = database.collection("tasks").onSnapshot((snapshot) => {
-  //     const updatedTasks = snapshot.docs.map((doc) => ({
-  //       id: doc.id,
-  //       ...doc.data(),
-  //     }));
-  //     setTasks(updatedTasks);
-  //   });
+  const handleUsersModal = () => {
+    setOnlineUsers(true);
+  };
 
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
+  const handleEditModal = () => {
+    setEditTask(true);
+  };
+
+  const handleFiltersModal = () => {
+    setFilters(true);
+  };
 
   return (
-    <div className="bg-slate-800 p-10 rounded-lg flex flex-col gap-4 w-[1500px] h-[1000px]">
-      <Modal open={open} setOpen={setOpen} />
-      <span className="text-center font-thin text-3xl">
-        Realtime TaskManager with Firebase
-      </span>
+    <div className="bg-slate-900 bg-opacity-90 p-16 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
+      <div className="flex justify-between gap-1 mb-10 w-full items-center">
+        <div className="flex flex-col">
+          <span className="text-2xl">Tarefas</span>
+          <span className="font-thin">
+            Lista de tarefas em tempo real da CoderTroop.
+          </span>
+        </div>
+        <div className="flex flex-col gap-2">
+          <button
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm"
+            onClick={handleAddModal}
+          >
+            Adicionar tarefa
+          </button>
+          <button
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm"
+            onClick={handleUsersModal}
+          >
+            Ver usuários on-line
+          </button>
+        </div>
+      </div>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
+        <TaskList tasks={tasks} />
+      </div>
 
-      <table className="table-auto">
-        <thead className="border-bottom ">
-          <tr>
-            <th className="text-start text-sm font-mono font-thin">
-              Nome da tarefa
-            </th>
-            <th className="text-sm font-mono font-thin">Criado por</th>
-            <th className="text-sm font-mono font-thin">Criado em</th>
-            <th className="text-sm font-mono font-thin">Configurações</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          <tr>
-            <td className="text-start block">
-              The Sliding Mr. Bones (Next Stop, Pottersville)
-            </td>
-            <td className="text-center">Malcolm Lockyer</td>
-            <td className="text-center">1961</td>
-            <td className="flex justify-center cursor-pointer">
-              <FcDataConfiguration onClick={() => setOpen(true)} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <AddTaskModal open={addTask} setOpen={setAddTask} />
+      <SeeTask open={seeTask} setOpen={setSeeTask} task={selectedTask} />
+      <EditTaskModal
+        open={editTask}
+        setOpen={setEditTask}
+        task={selectedTask}
+      />
+      <DeleteModal
+        open={deleteTask}
+        setOpen={setDeleteTask}
+        task={selectedTask}
+      />
+      <OnlineUsersModal open={onlineUsers} setOpen={setOnlineUsers} />
+      <FiltersModal open={filters} setOpen={setFilters} />
     </div>
   );
 };
 
-export default TaskList;
+export default TaskDashboard;

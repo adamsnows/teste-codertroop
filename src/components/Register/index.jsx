@@ -38,7 +38,7 @@ const Register = () => {
   };
 
   return (
-    <div className="p-10 bg-slate-800 rounded-lg flex flex-col">
+    <div className="p-10 bg-slate-900 bg-opacity-90 rounded-lg flex flex-col">
       <div className="flex flex-col gap-4">
         <span className="text-5xl font-bold text-center mb-5">Registro</span>
       </div>

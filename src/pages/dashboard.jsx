@@ -4,7 +4,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { db } from "@/services/firebase";
 
 import Head from "next/head";
-import TaskList from "@/components/Dashboard";
+import TaskDashboard from "@/components/Dashboard";
 
 const DashboardPage = () => {
   return (
@@ -12,7 +12,7 @@ const DashboardPage = () => {
       <Head>
         <title>CoderTroop - TaskManager Dashboard</title>
       </Head>
-      <TaskList />
+      <TaskDashboard />
     </div>
   );
 };
