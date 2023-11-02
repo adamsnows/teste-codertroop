@@ -55,44 +55,44 @@ const OnlineUsersModal = ({ open, setOpen }) => {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg p-6">
                 <span
-                  for="message"
-                  class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  htmlFor="message"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Usuários
                 </span>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
-                  <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
+                  <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
-                        <th scope="col" class="px-6 py-3">
+                        <th scope="col" className="px-6 py-3">
                           Email
                         </th>
 
-                        <th scope="col" class="px-6 py-3 text-end">
+                        <th scope="col" className="px-6 py-3 text-end">
                           Online
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                      <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                         <th
                           scope="row"
-                          class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                         >
                           adam@mail.com
                         </th>
-                        <td class="px-6 py-4 flex items-center justify-end me-3 mt-1">
+                        <td className="px-6 py-4 flex items-center justify-end me-3 mt-1">
                           <div className="h-3 w-3 bg-red-700 rounded-full" />
                         </td>
                       </tr>
-                      <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                      <tr className="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
                         <th
                           scope="row"
-                          class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                         >
                           rafael@mail.com
                         </th>
-                        <td class="px-6 py-4 flex items-center justify-end me-3 mt-1">
+                        <td className="px-6 py-4 flex items-center justify-end me-3 mt-1">
                           <div className="h-3 w-3 bg-green-700 rounded-full" />
                         </td>
                       </tr>

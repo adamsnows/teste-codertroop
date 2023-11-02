@@ -17,7 +17,7 @@ const TaskListItem = ({ task, tasks }) => {
     >
       <th
         scope="row"
-        class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer"
+        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white cursor-pointer"
         onClick={() => {
           setSeeTask(true);
           setSelectedTask(task);
@@ -25,11 +25,11 @@ const TaskListItem = ({ task, tasks }) => {
       >
         {task.name}
       </th>
-      <td class="px-6 py-4">
+      <td className="px-6 py-4">
         {DateTime.fromISO(task.createdAt).toLocaleString(DateTime.DATETIME_MED)}
       </td>
-      <td class="px-6 py-4">{task.createdBy}</td>
-      <td class="px-5 py-4 flex gap-3 items-center">
+      <td className="px-6 py-4">{task.createdBy}</td>
+      <td className="px-5 py-4 flex gap-3 items-center">
         <AiFillEdit
           className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
           onClick={() => {

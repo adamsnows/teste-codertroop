@@ -4,9 +4,12 @@ import { Dialog, Transition } from "@headlessui/react";
 import { db, ref, remove } from "@/services/firebase";
 
 import { toast } from "react-toastify";
+import { useTasksContext } from "@/context/TaskProvider";
 
 const DeleteModal = ({ open, setOpen, task }) => {
   const cancelButtonRef = useRef(null);
+
+  const { tasks, setTasks } = useTasksContext();
 
   const handleDeleteTask = () => {
     try {
@@ -16,6 +19,8 @@ const DeleteModal = ({ open, setOpen, task }) => {
 
       toast.success("Tarefa deletada com sucesso!");
       setOpen(false);
+      const updatedTasks = tasks.filter((t) => t.id !== task.id);
+      setTasks(updatedTasks);
     } catch (error) {
       console.error("Erro ao deletar a tarefa:", error);
     }
@@ -54,8 +59,8 @@ const DeleteModal = ({ open, setOpen, task }) => {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg p-6">
                 <label
-                  for="message"
-                  class="block mb-2 text-md font-medium text-gray-900 dark:text-white"
+                  htmlFor="message"
+                  className="block mb-2 text-md font-medium text-gray-900 dark:text-white"
                 >
                   Deletar tarefa
                 </label>

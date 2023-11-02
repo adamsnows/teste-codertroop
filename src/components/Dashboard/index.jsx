@@ -27,6 +27,7 @@ const TaskDashboard = () => {
     deleteTask,
     setDeleteTask,
   } = useTasksContext();
+  console.log(tasks);
 
   useEffect(() => {
     const tasksRef = ref(db, "tasks");
@@ -40,7 +41,7 @@ const TaskDashboard = () => {
         setTasks(tasksArray);
       }
     });
-  }, [tasks, setTasks]);
+  }, []);
 
   const handleAddModal = () => {
     setAddTask(true);
@@ -59,7 +60,7 @@ const TaskDashboard = () => {
   };
 
   return (
-    <div className="bg-slate-900 bg-opacity-90 p-16 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
+    <div className="bg-slate-900 bg-opacity-90 p-14 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
       <div className="flex justify-between gap-1 mb-10 w-full items-center">
         <div className="flex flex-col">
           <span className="text-2xl">Tarefas</span>
@@ -82,9 +83,17 @@ const TaskDashboard = () => {
           </button>
         </div>
       </div>
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
-        <TasksList tasks={tasks} />
-      </div>
+      {tasks.length == 0 ? (
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1 p-5 text-center">
+          <span className="text-sm">
+            Nenhuma tarefa por aqui, teste adicionar uma nova tarefa!
+          </span>
+        </div>
+      ) : (
+        <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
+          <TasksList tasks={tasks} />
+        </div>
+      )}
 
       <AddTaskModal open={addTask} setOpen={setAddTask} />
       <SeeTask open={seeTask} setOpen={setSeeTask} task={selectedTask} />
