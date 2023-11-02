@@ -1,13 +1,18 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AddTaskModal from "../Modal/Add";
 import EditTaskModal from "../Modal/Edit";
 import OnlineUsersModal from "../Modal/Users";
 import FiltersModal from "../Modal/Filters";
-import { db, ref, onValue } from "@/services/firebase";
+import { db, ref, onValue, set } from "@/services/firebase";
 import SeeTask from "../Modal/Task";
 import TasksList from "./List";
 import DeleteModal from "../Modal/Delete";
-import { TasksProvider, useTasksContext } from "@/context/TaskProvider";
+import { useTasksContext } from "@/context/TaskProvider";
+import { useAuth } from "@/context/AuthContext";
+import { getAuth, signOut } from "firebase/auth";
+import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/router";
+import CompleteModal from "../Modal/Complete";
 
 const TaskDashboard = () => {
   const {
@@ -26,8 +31,19 @@ const TaskDashboard = () => {
     selectedTask,
     deleteTask,
     setDeleteTask,
+    completedTask,
+    setCompletedTask,
+    filteredTasks,
+    applyFilter,
   } = useTasksContext();
-  console.log(tasks);
+
+  const { user } = useAuth();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    applyFilter("all");
+  }, [tasks]);
 
   useEffect(() => {
     const tasksRef = ref(db, "tasks");
@@ -43,16 +59,53 @@ const TaskDashboard = () => {
     });
   }, []);
 
+  let inactivityTimeout;
+
+  const handleInactivity = () => {
+    if (inactivityTimeout) {
+      clearTimeout(inactivityTimeout);
+    }
+
+    inactivityTimeout = setTimeout(() => {
+      handleLogout();
+    }, 10 * 60 * 1000);
+  };
+
+  handleInactivity();
+
+  document.addEventListener("click", handleInactivity);
+
+  const clearInactivityTimeout = () => {
+    if (inactivityTimeout) {
+      clearTimeout(inactivityTimeout);
+    }
+  };
+
+  const handleLogout = async () => {
+    const auth = getAuth();
+
+    const userId = user.uid;
+    const userEmail = user.email;
+
+    const userOnlineRef = ref(db, `onlineUsers/${userId}`);
+    await set(userOnlineRef, { online: false, email: userEmail });
+
+    deleteCookie("user-email");
+    deleteCookie("token");
+
+    clearInactivityTimeout();
+
+    await signOut(auth);
+
+    router.push("/");
+  };
+
   const handleAddModal = () => {
     setAddTask(true);
   };
 
   const handleUsersModal = () => {
     setOnlineUsers(true);
-  };
-
-  const handleEditModal = () => {
-    setEditTask(true);
   };
 
   const handleFiltersModal = () => {
@@ -81,6 +134,18 @@ const TaskDashboard = () => {
           >
             Ver usuários on-line
           </button>
+          <button
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm"
+            onClick={handleFiltersModal}
+          >
+            Filtrar tarefas
+          </button>
+          <button
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm hover:bg-red-400 ease-in-out duration-300"
+            onClick={handleLogout}
+          >
+            Sair
+          </button>
         </div>
       </div>
       {tasks.length == 0 ? (
@@ -91,7 +156,7 @@ const TaskDashboard = () => {
         </div>
       ) : (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
-          <TasksList tasks={tasks} />
+          <TasksList tasks={filteredTasks} />
         </div>
       )}
 
@@ -108,7 +173,16 @@ const TaskDashboard = () => {
         task={selectedTask}
       />
       <OnlineUsersModal open={onlineUsers} setOpen={setOnlineUsers} />
-      <FiltersModal open={filters} setOpen={setFilters} />
+      <FiltersModal
+        open={filters}
+        setOpen={setFilters}
+        applyFilter={applyFilter}
+      />
+      <CompleteModal
+        open={completedTask}
+        setOpen={setCompletedTask}
+        task={selectedTask}
+      />
     </div>
   );
 };

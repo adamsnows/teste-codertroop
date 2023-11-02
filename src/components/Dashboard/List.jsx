@@ -16,6 +16,9 @@ const TasksList = ({ tasks }) => {
             Criada por
           </th>
           <th scope="col" className="px-6 py-3">
+            Atribuido à
+          </th>
+          <th scope="col" className="px-6 py-3 flex justify-center">
             Ação
           </th>
         </tr>

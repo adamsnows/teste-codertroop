@@ -1,19 +1,39 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef, useState, useEffect, useCallback } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { db, ref, push } from "@/services/firebase";
-
+import { db, ref, push, onValue } from "@/services/firebase";
 import { toast } from "react-toastify";
-import { getCookie } from "cookies-next";
-import { useTasksContext } from "@/context/TaskProvider";
+import { getCookie, getCookies } from "cookies-next";
 
 const AddModal = ({ open, setOpen }) => {
   const cancelButtonRef = useRef(null);
   const [taskName, setTaskName] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
   const [isInvalid, setIsInvalid] = useState(false);
+  const [selectedUserEmail, setSelectedUserEmail] = useState("");
+  const [users, setUsers] = useState([]);
 
-  const handleAddTask = () => {
-    if (!taskName || !taskDescription) {
+  useEffect(() => {
+    const onlineUsersRef = ref(db, "users");
+
+    const unsubscribe = onValue(onlineUsersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const usersData = snapshot.val();
+
+        const usersList = Object.keys(usersData).map((userId) => ({
+          email: usersData[userId].email,
+          online: usersData[userId].online,
+        }));
+        setUsers(usersList);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [setUsers]);
+
+  const handleAddTask = useCallback(() => {
+    if (!taskName || !taskDescription || !selectedUserEmail) {
       setIsInvalid(true);
       return setTimeout(() => {
         setIsInvalid(false);
@@ -23,7 +43,9 @@ const AddModal = ({ open, setOpen }) => {
         name: taskName,
         description: taskDescription,
         createdBy: getCookie("user-email"),
+        assignedTo: selectedUserEmail,
         createdAt: new Date().toISOString(),
+        completed: false,
       };
 
       const tasksRef = ref(db, "tasks");
@@ -32,11 +54,33 @@ const AddModal = ({ open, setOpen }) => {
 
       setTaskName("");
       setTaskDescription("");
+      setSelectedUserEmail("");
 
       toast.success("Tarefa criada com sucesso!");
       setOpen(false);
     }
-  };
+  }, [taskName, taskDescription, selectedUserEmail, setOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter" && e.shiftKey) {
+        e.preventDefault();
+        handleAddTask();
+      }
+    };
+
+    const inputElement = document.getElementById("message");
+
+    if (inputElement) {
+      inputElement.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener("keydown", handleKeyDown);
+      }
+    };
+  }, [handleAddTask]);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -71,59 +115,92 @@ const AddModal = ({ open, setOpen }) => {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg p-6">
                 <label
-                  htmlFor="message"
+                  htmlFor="taskNameInput"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Adicionar tarefa
                 </label>
-                <input
-                  type="text"
-                  placeholder="Nome da tarefa"
-                  value={taskName}
-                  className={`block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg ${
-                    isInvalid
-                      ? " shake border bg-red-500"
-                      : "border border-gray-100"
-                  } dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none mb-3`}
-                  onChange={(e) => {
-                    setTaskName(e.target.value);
-                  }}
-                />
-                <textarea
-                  id="message"
-                  rows="4"
-                  value={taskDescription}
-                  className={`block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg ${
-                    isInvalid
-                      ? " shake border bg-red-500"
-                      : "border border-gray-100"
-                  } dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none`}
-                  placeholder="Escreva detalhes de sua tarefa aqui..."
-                  onChange={(e) => {
-                    setTaskDescription(e.target.value);
-                  }}
-                />
-
-                <div className="bg-slate-900 py-3 sm:flex sm:flex-row-reverse ">
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={handleAddTask}
-                  >
-                    Adicionar
-                  </button>
-                  <button
-                    type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset  hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => {
-                      setOpen(false);
-                      setTaskDescription("");
-                      setTaskName("");
+                <div className="flex flex-col gap-3">
+                  <input
+                    type="text"
+                    id="taskNameInput"
+                    placeholder="Nome da tarefa"
+                    value={taskName}
+                    className={`block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg ${
+                      isInvalid
+                        ? " shake border bg-red-500"
+                        : "border border-gray-100"
+                    } dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none`}
+                    onChange={(e) => {
+                      setTaskName(e.target.value);
                     }}
-                    ref={cancelButtonRef}
+                  />
+                  <textarea
+                    id="message"
+                    rows="4"
+                    value={taskDescription}
+                    className={`block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg ${
+                      isInvalid
+                        ? " shake border bg-red-500"
+                        : "border border-gray-100"
+                    } dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:outline-none`}
+                    placeholder="Escreva detalhes de sua tarefa aqui..."
+                    onChange={(e) => {
+                      setTaskDescription(e.target.value);
+                    }}
+                  />
+
+                  <select
+                    value={selectedUserEmail}
+                    onChange={(e) => {
+                      setSelectedUserEmail(e.target.value);
+                    }}
+                    className={`block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg ${
+                      isInvalid
+                        ? " shake border bg-red-500"
+                        : "border border-gray-100"
+                    } dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 focus:outline-none`}
                   >
-                    Cancelar
-                  </button>
+                    <option value="">Atribua a um usuário!</option>
+                    {users &&
+                      users.map((user) => {
+                        return (
+                          <option key={user.uid} value={user.email}>
+                            {user.email}
+                          </option>
+                        );
+                      })}
+                  </select>
+                </div>
+
+                <div className="flex justify-between my-3">
+                  <span className="text-xs text-gray-500 pe-8">
+                    {
+                      "utilize shift + enter pra não precisar apertar no botão :)"
+                    }
+                  </span>
+                  <div className="bg-slate-900  sm:flex sm:flex-row-reverse ">
+                    <button
+                      type="button"
+                      className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover-bg-red-500 sm:ml-3 sm:w-auto"
+                      onClick={handleAddTask}
+                    >
+                      Adicionar
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset  hover-bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => {
+                        setOpen(false);
+                        setTaskDescription("");
+                        setTaskName("");
+                        setSelectedUserEmail("");
+                      }}
+                      ref={cancelButtonRef}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>

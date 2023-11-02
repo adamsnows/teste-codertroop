@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ref, set, push } from "firebase/database";
+import { db } from "@/services/firebase";
+import { setCookie } from "cookies-next";
 
 const Register = () => {
   const router = useRouter();
@@ -26,21 +27,40 @@ const Register = () => {
           email,
           password
         );
+
         const user = userCredential.user;
 
-        console.log("Usuário criado:", user);
+        setCookie("token", user.accessToken);
+        setCookie("user-email", user.email);
+
+        const userId = user.uid;
+        const userEmail = user.email;
+
+        const userOnlineRef = ref(db, `onlineUsers/${userId}`);
+        set(userOnlineRef, { online: true, email: userEmail });
+
+        const usersRef = ref(db, `users/${userId}`);
+        set(usersRef, { uid: user.uid, email: userEmail });
+
         toast.success("Usuário criado com sucesso!");
       } catch (error) {
-        console.error("Erro ao criar usuário:", error);
-        toast.error("Erro ao criar usuário.");
+        console.log(error);
+        if (error.message == "Firebase: Error (auth/email-already-in-use).") {
+          toast.error("Este e-mail já está em uso.");
+        } else {
+          toast.error("Erro ao criar conta.");
+        }
       }
     }
   };
 
   return (
     <div className="p-10 bg-slate-900 bg-opacity-90 rounded-lg flex flex-col">
-      <div className="flex flex-col gap-4">
-        <span className="text-5xl font-bold text-center mb-5">Registro</span>
+      <div className="flex flex-col gap-4 mb-5">
+        <span className="text-5xl font-bold text-center">Registro</span>
+        <span className="text-sm text-center">
+          TaskManager made with NextJs & Tailwind
+        </span>
       </div>
       <div className="flex items-center justify-center">
         <hr className="w-40" />

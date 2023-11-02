@@ -1,15 +1,32 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+
+import { db, ref, set } from "@/services/firebase";
+
 import { toast } from "react-toastify";
+import { useTasksContext } from "@/context/TaskProvider";
 
-const FiltersModal = ({ open, setOpen, applyFilter }) => {
+const CompleteModal = ({ open, setOpen, task }) => {
   const cancelButtonRef = useRef(null);
-  const [selectedFilter, setSelectedFilter] = useState("all");
 
-  const handleApplyFilter = () => {
-    applyFilter(selectedFilter);
-    toast.success("Filtrado com sucesso!");
-    setOpen(false);
+  const { tasks, setTasks } = useTasksContext();
+
+  const handleCompleteTask = () => {
+    try {
+      const taskRef = ref(db, `tasks/${task.id}`);
+      set(taskRef, { ...task, completed: true });
+
+      setOpen(false);
+
+      const updatedTasks = tasks.map((t) =>
+        t.id === task.id ? { ...t, completed: true } : t
+      );
+      setTasks(updatedTasks);
+      console.log(tasks);
+      toast.success("Tarefa marcada como completa!");
+    } catch (error) {
+      console.error("Erro ao marcar a tarefa como completa:", error);
+    }
   };
 
   return (
@@ -46,55 +63,34 @@ const FiltersModal = ({ open, setOpen, applyFilter }) => {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-slate-900 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg p-6">
                 <label
                   htmlFor="message"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  className="block mb-2 text-md font-medium text-gray-900 dark:text-white"
                 >
-                  Filtrar tarefas
+                  Marcar tarefa como completa
                 </label>
-                <div className="space-y-2">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      value="all"
-                      checked={selectedFilter === "all"}
-                      onChange={() => setSelectedFilter("all")}
-                    />
-                    <span className="ml-2">Todas as tarefas</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      value="mine"
-                      checked={selectedFilter === "mine"}
-                      onChange={() => setSelectedFilter("mine")}
-                    />
-                    <span className="ml-2">Minhas tarefas</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      value="completed"
-                      checked={selectedFilter === "completed"}
-                      onChange={() => setSelectedFilter("completed")}
-                    />
-                    <span className="ml-2">Tarefas completas</span>
-                  </label>
-                </div>
 
-                <div className="bg-slate-900 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <span className="mt-2 text-gray-400 text-sm">
+                  Tem certeza de que deseja marcar esta tarefa como completa?
+                  esta ação não poderá ser desfeita.
+                </span>
+
+                <div className="bg-slate-900 py-3 sm:flex sm:flex-row-reverse ">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                    onClick={handleApplyFilter}
+                    className="inline-flex w-full justify-center rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-600 sm:ml-3 sm:w-auto"
+                    onClick={handleCompleteTask}
                   >
-                    Aplicar Filtro
+                    Marcar como completa
                   </button>
+
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md bg-slate-400 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset  hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      setOpen(false);
+                    }}
                     ref={cancelButtonRef}
                   >
-                    Cancelar
+                    Fechar
                   </button>
                 </div>
               </Dialog.Panel>
@@ -105,5 +101,4 @@ const FiltersModal = ({ open, setOpen, applyFilter }) => {
     </Transition.Root>
   );
 };
-
-export default FiltersModal;
+export default CompleteModal;

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-
-import { db, ref, onValue, set } from "@/services/firebase";
+import { useAuth } from "./AuthContext";
 
 const TasksContext = createContext();
 
@@ -12,33 +11,29 @@ export const TasksProvider = ({ children }) => {
   const [deleteTask, setDeleteTask] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState(false);
   const [filters, setFilters] = useState(false);
+  const [completedTask, setCompletedTask] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
+  const [filteredTasks, setFilteredTasks] = useState(tasks);
 
-  const disconnectUser = (userId) => {
-    const userRef = ref(db, `onlineUsers/${userId}`);
+  const { user } = useAuth();
 
-    set(ref(userRef, "online"), false);
+  const applyFilter = (filter) => {
+    switch (filter) {
+      case "mine":
+        const myTasks = tasks.filter((task) => task.createdBy === user.email);
+        setFilteredTasks(myTasks);
+        break;
+
+      case "completed":
+        const completedTasks = tasks.filter((task) => task.completed);
+        setFilteredTasks(completedTasks);
+        break;
+
+      default:
+        setFilteredTasks(tasks);
+        break;
+    }
   };
-
-  useEffect(() => {
-    const onlineUsersRef = ref(db, "onlineUsers");
-
-    onValue(onlineUsersRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const onlineUsersData = snapshot.val();
-
-        const onlineCount = Object.values(onlineUsersData).filter(
-          (user) => user.online
-        ).length;
-
-        setOnlineUsers(onlineCount);
-      }
-    });
-
-    return () => {
-      // desconectar users
-    };
-  }, [setOnlineUsers]);
 
   return (
     <TasksContext.Provider
@@ -59,7 +54,11 @@ export const TasksProvider = ({ children }) => {
         setTasks,
         selectedTask,
         setSelectedTask,
-        disconnectUser,
+        completedTask,
+        setCompletedTask,
+        applyFilter,
+        filteredTasks,
+        setFilteredTasks,
       }}
     >
       {children}
