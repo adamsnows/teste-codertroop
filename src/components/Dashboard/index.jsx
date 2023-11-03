@@ -85,7 +85,7 @@ const TaskDashboard = () => {
   useEffect(() => {
     let timer;
 
-    const sessionTimeout = 60000;
+    const sessionTimeout = 600000;
 
     const resetTimer = () => {
       clearTimeout(timer);
