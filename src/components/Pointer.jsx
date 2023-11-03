@@ -8,6 +8,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const [userMouseEvents, setUserMouseEvents] = useState([]);
   const [position, setPosition] = useState([]);
   const [windowFocused, setWindowFocused] = useState(true);
+
   console.log(windowFocused);
 
   useEffect(() => {
@@ -27,6 +28,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
       const userOnlineRef = ref(db, `mouseEvents/${user.uid}`);
       set(userOnlineRef, {
         email: user.email,
+        enable: windowFocused,
         x: e.clientX,
         y: e.clientY,
       });
@@ -40,7 +42,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
     };
-  }, [user, position]);
+  }, [user, position, setWindowFocused]);
 
   return (
     <>
@@ -49,7 +51,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
           return null;
         }
 
-        if (isUserOnline && windowFocused) {
+        if (isUserOnline && onlineUser.enable) {
           return (
             <div
               key={onlineUser.uid}
