@@ -9,8 +9,6 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lastMousePositionTime, setLastMousePositionTime] = useState(0);
 
-  console.log(lastMousePositionTime);
-
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
 
@@ -51,9 +49,6 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
         if (userId !== user.uid) {
           const userEvent = userMouseEvents[userId];
           if (currentTime - userEvent.lastActive >= inactivityTimeout) {
-            // Usuário inativo, você pode optar por remover seu cursor
-            // do estado para que ele não seja renderizado
-            // ou definir suas coordenadas para fora da tela
             delete userMouseEvents[userId];
             setUserMouseEvents({ ...userMouseEvents });
           }

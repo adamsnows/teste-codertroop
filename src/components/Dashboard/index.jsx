@@ -71,7 +71,7 @@ const TaskDashboard = () => {
 
     inactivityTimeout = setTimeout(() => {
       handleLogout();
-    }, 10 * 60 * 10000);
+    }, 10 * 60 * 1000);
   };
 
   handleInactivity();
