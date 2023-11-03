@@ -55,42 +55,42 @@ const Register = () => {
   };
 
   return (
-    <div className="p-10 bg-slate-900 bg-opacity-90 rounded-lg flex flex-col">
-      <div className="flex flex-col gap-4 mb-5">
-        <span className="text-5xl font-bold text-center">Registro</span>
-        <span className="text-sm text-center">
+    <div className="p-5 sm:p-10 bg-slate-900 bg-opacity-90 w-auto md:w-[500px] rounded-lg flex flex-col">
+      <div className="flex flex-col gap-2 mb-3">
+        <span className="text-3xl font-bold text-center">Registro</span>
+        <span className="text-xs text-center">
           TaskManager made with NextJs & Tailwind
         </span>
       </div>
       <div className="flex items-center justify-center">
-        <hr className="w-40" />
+        <hr className="w-16" />
         <AnimationDiscord />
-        <hr className="w-40" />
+        <hr className="w-16" />
       </div>
-      <form className="login-form flex flex-col gap-4">
+      <form className="login-form flex flex-col gap-2">
         <label>Seu email</label>
         <input
           type="email"
           placeholder="seu-email@quentemail.com"
-          className="rounded p-2 focus:outline-none"
+          className="rounded p-1 focus:outline-none px-2"
           onChange={(e) => setEmail(e.target.value)}
         />
         <label>Sua senha</label>
         <input
           type="password"
           placeholder="********"
-          className="rounded p-2 focus:outline-none"
+          className="rounded p-1 focus:outline-none px-2"
           onChange={(e) => setPassword(e.target.value)}
         />
         <button
-          className="bg-white rounded px-6 py-2 mt-5 text-black"
+          className="bg-white rounded px-4 py-2 mt-2 text-black cursor-pointer"
           onClick={handleRegister}
         >
           Registrar
         </button>
       </form>
       <span
-        className="text-center text-sm mt-4 cursor-pointer underline italic"
+        className="text-center text-xs mt-2 cursor-pointer underline italic"
         onClick={() => router.push("/")}
       >
         Já tem conta? Logue

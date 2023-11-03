@@ -44,7 +44,7 @@ const TaskListItem = ({ task, tasks }) => {
       </td>
       <td className="px-6 py-4">{task.createdBy}</td>
       <td className="px-6 py-4">{task.assignedTo}</td>
-      <td className="px-[8px] py-4 flex gap-3 items-center justify-center">
+      <td className="px-[8px] py-4 flex gap-3 items-center justify-center mt-8 md:mt-0">
         {isCurrentUserOwner ? (
           <>
             {!task.completed && (

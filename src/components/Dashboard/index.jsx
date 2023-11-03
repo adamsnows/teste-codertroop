@@ -125,49 +125,49 @@ const TaskDashboard = () => {
 
   if (!user) return <></>;
   return (
-    <div className="bg-slate-900 bg-opacity-90 p-14 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
-      <div className="flex justify-between gap-1 mb-5 w-full ">
-        <div className="flex flex-col">
+    <div className="bg-slate-900 bg-opacity-90 p-14 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px] sm:w-full">
+      <div className="flex flex-col md:flex-row justify-between gap-1 mb-5 w-full ">
+        <div className="flex flex-col gap-4 text-center mb-5 md:mb-0 mb:text-start">
           <span className="text-2xl">TaskManager by CoderTroop</span>
-          <span className="font-thin">
+          <span className="font-thin ">
             Lista de tarefas em tempo real criado por Adam Neves.
           </span>
         </div>
         <div className="flex flex-col gap-2">
           <button
-            className="py-2 px-4 bg-slate-700 rounded-lg text-sm"
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm sm:text-xs"
             onClick={handleAddModal}
           >
             Adicionar tarefa
           </button>
           <button
-            className="py-2 px-4 bg-slate-700 rounded-lg text-sm"
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm sm:text-xs"
             onClick={handleUsersModal}
           >
-            Ver usuários on-line
+            Ver usuários online
           </button>
           <button
-            className="py-2 px-4 bg-slate-700 rounded-lg text-sm"
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm sm:text-xs"
             onClick={handleFiltersModal}
           >
             Filtrar tarefas
           </button>
           <button
-            className="py-2 px-4 bg-slate-700 rounded-lg text-sm hover:bg-red-400 ease-in-out duration-300"
+            className="py-2 px-4 bg-slate-700 rounded-lg text-sm sm:text-xs hover:bg-red-400 ease-in-out duration-300"
             onClick={handleLogout}
           >
             Sair
           </button>
         </div>
       </div>
-      {tasks.length == 0 ? (
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1 p-5 text-center">
+      {tasks.length === 0 ? (
+        <div className="relative overflow-x-auto shadow-md  border-gray-500 border border-1 p-5 text-center rounded-lg">
           <span className="text-sm">
             Nenhuma tarefa por aqui, teste adicionar uma nova tarefa!
           </span>
         </div>
       ) : (
-        <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-gray-500 border border-1">
+        <div className="relative overflow-x-auto shadow-md  border-gray-500 border border-1 rounded-lg">
           <TasksList tasks={filteredTasks} />
         </div>
       )}
