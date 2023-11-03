@@ -25,7 +25,6 @@ const TaskDashboard = () => {
     seeTask,
     setSeeTask,
     onlineUsers,
-    setOnlineUsers,
     filters,
     setFilters,
     setEditTask,

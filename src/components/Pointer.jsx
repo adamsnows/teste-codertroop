@@ -5,11 +5,21 @@ import { ref, set } from "firebase/database";
 import { useState, useEffect } from "react";
 
 const MouseCursor = ({ username, isCurrentUser, isUserOnline }) => {
+  const { user } = useAuth();
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const updateMousePosition = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
+
+      if (user) {
+        const userOnlineRef = ref(db, `mouseEvents/${user.uid}`);
+        set(userOnlineRef, {
+          email: user.email,
+          x: e.clientX,
+          y: e.clientY,
+        });
+      }
     };
 
     window.addEventListener("mousemove", updateMousePosition);
@@ -17,7 +27,7 @@ const MouseCursor = ({ username, isCurrentUser, isUserOnline }) => {
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
     };
-  }, []);
+  }, [user]);
 
   if (isCurrentUser || !isUserOnline) {
     return null;
