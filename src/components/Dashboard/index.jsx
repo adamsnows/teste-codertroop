@@ -102,8 +102,8 @@ const TaskDashboard = () => {
 
     const userOnlineRef = ref(db, `onlineUsers/${userId}`);
     const mouseEventsRef = ref(db, `mouseEvents/${userId}`);
+    await set(userOnlineRef, { email: userEmail, online: false });
     await remove(mouseEventsRef);
-    await set(userOnlineRef, { online: false, email: userEmail });
 
     deleteCookie("user-email");
     deleteCookie("token");

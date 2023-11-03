@@ -22,7 +22,6 @@ const CompleteModal = ({ open, setOpen, task }) => {
         t.id === task.id ? { ...t, completed: true } : t
       );
       setTasks(updatedTasks);
-      console.log(tasks);
       toast.success("Tarefa marcada como completa!");
     } catch (error) {
       console.error("Erro ao marcar a tarefa como completa:", error);

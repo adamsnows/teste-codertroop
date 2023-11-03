@@ -7,7 +7,6 @@ import { useTasksContext } from "@/context/TaskProvider";
 const OnlineUsersModal = ({ open, setOpen }) => {
   const cancelButtonRef = useRef(null);
   const { onlineUsers } = useTasksContext();
-  console.log(onlineUsers);
 
   return (
     <Transition.Root show={open} as={Fragment}>
