@@ -57,7 +57,23 @@ Para o gerenciamento dos dados do aplicativo, fiz uso do Firebase Realtime Datab
 
 Implementei uma funcionalidade de toast para fornecer feedback aos usuários a cada ação realizada, mantendo-os informados sobre o estado das tarefas e das interações. Além disso, estabeleci um limite de tempo de 10 minutos para a inatividade. Caso um usuário fique inativo por mais de 10 minutos, o sistema o desconectará automaticamente, garantindo a segurança e eficiência do aplicativo.
 
+### Filtro de Tarefas
+
+O aplicativo também apresenta uma funcionalidade de filtro que permite aos usuários selecionar as tarefas de acordo com diferentes critérios, incluindo:
+
+- Tarefas Atribuídas a Mim: Permite que os usuários vejam apenas as tarefas atribuídas a eles.
+- Tarefas Concluídas: Oferece a capacidade de visualizar somente as tarefas que foram marcadas como concluídas.
+- Todas as Tarefas: Apresenta uma lista completa de todas as tarefas disponíveis.
+
+Esses recursos de filtragem proporcionam aos usuários a flexibilidade de visualizar e gerenciar tarefas de maneira eficaz, tornando a experiência de uso do aplicativo mais conveniente e personalizada.
+
 Essa estratégia de implementação permitiu a criação de um gerenciador de tarefas dinâmico e interativo, oferecendo recursos essenciais para colaboração e rastreamento de tarefas, juntamente com um ambiente seguro e responsivo para os usuários.
 
+BÔNUS:
+
+
+- Bônus 1: [Site](https://codertroop-taskmanager.vercel.app/)
+- Bônus 2: Não feito
+- Bônus 3: Feito
 
 __Adam Neves__
