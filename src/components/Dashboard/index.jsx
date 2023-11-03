@@ -44,8 +44,6 @@ const TaskDashboard = () => {
 
   const router = useRouter();
 
-  console.log(onlineUsers);
-
   useEffect(() => {
     applyFilter("all");
   }, [tasks]);
