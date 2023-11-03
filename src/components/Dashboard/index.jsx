@@ -37,6 +37,7 @@ const TaskDashboard = () => {
     applyFilter,
     openUsers,
     setOpenUsers,
+    userMouseEvents,
   } = useTasksContext();
 
   const { user } = useAuth();
@@ -127,7 +128,6 @@ const TaskDashboard = () => {
   };
 
   if (!user) return <></>;
-  console.log(onlineUsers);
   return (
     <div className="bg-slate-900 bg-opacity-90 p-14 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
       <div className="flex justify-between gap-1 mb-10 w-full items-center">
@@ -207,6 +207,7 @@ const TaskDashboard = () => {
               <MouseCursor
                 key={onlineUser.uid}
                 username={onlineUser.email}
+                userMouseEvents={userMouseEvents}
                 isCurrentUser={onlineUser.email === user.email}
                 isUserOnline={onlineUser.online}
               />

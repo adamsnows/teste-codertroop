@@ -17,6 +17,7 @@ export const TasksProvider = ({ children }) => {
   const [selectedTask, setSelectedTask] = useState({});
   const [filteredTasks, setFilteredTasks] = useState(tasks);
   const [openUsers, setOpenUsers] = useState(false);
+  const [userMouseEvents, setUserMouseEvents] = useState([]);
 
   const { user } = useAuth();
 
@@ -40,6 +41,7 @@ export const TasksProvider = ({ children }) => {
 
   useEffect(() => {
     const onlineUsersRef = ref(db, "onlineUsers");
+    const userMouveEventsRef = ref(db, "mouseEvents");
 
     const unsubscribe = onValue(onlineUsersRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -51,6 +53,19 @@ export const TasksProvider = ({ children }) => {
         }));
 
         setOnlineUsers(onlineUsersList);
+      }
+    });
+
+    onValue(onlineUsersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const onlineUsersData = snapshot.val();
+
+        const userMouseEvents = Object.keys(onlineUsersData).map((userId) => ({
+          email: onlineUsersData[userId].email,
+          online: onlineUsersData[userId].online,
+        }));
+
+        setUserMouseEvents(userMouseEvents);
       }
     });
 
@@ -85,6 +100,8 @@ export const TasksProvider = ({ children }) => {
         setFilteredTasks,
         openUsers,
         setOpenUsers,
+        userMouseEvents,
+        setUserMouseEvents,
       }}
     >
       {children}
