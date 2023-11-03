@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const { user } = useAuth();
   const [userMouseEvents, setUserMouseEvents] = useState([]);
-  const [position, setPosition] = useState([]);
-  const [windowFocused, setWindowFocused] = useState(true);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [lastMousePositionTime, setLastMousePositionTime] = useState(0);
 
-  console.log(windowFocused);
+  console.log(lastMousePositionTime);
 
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
@@ -24,25 +24,40 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
 
     const updateMousePosition = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
+      setLastMousePositionTime(new Date().getTime());
 
       const userOnlineRef = ref(db, `mouseEvents/${user.uid}`);
       set(userOnlineRef, {
         email: user.email,
-        enable: windowFocused,
         x: e.clientX,
         y: e.clientY,
       });
     };
-
-    window.addEventListener("focus", () => setWindowFocused(true));
-    window.addEventListener("blur", () => setWindowFocused(false));
 
     window.addEventListener("mousemove", updateMousePosition);
 
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
     };
-  }, [user, position, setWindowFocused]);
+  }, [user, position]);
+
+  // Define o tempo limite de inatividade em milissegundos (5 segundos)
+  const inactivityTimeout = 5000;
+
+  useEffect(() => {
+    const checkInactivity = () => {
+      const currentTime = new Date().getTime();
+      if (currentTime - lastMousePositionTime >= inactivityTimeout) {
+        setPosition({ x: 0, y: 0 }); // Define a posição para fora da tela ou oculta
+      }
+    };
+
+    const inactivityInterval = setInterval(checkInactivity, 1000);
+
+    return () => {
+      clearInterval(inactivityInterval);
+    };
+  }, [lastMousePositionTime]);
 
   return (
     <>
@@ -51,7 +66,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
           return null;
         }
 
-        if (isUserOnline && onlineUser.enable) {
+        if (isUserOnline && onlineUser.x !== 0 && onlineUser.y !== 0) {
           return (
             <div
               key={onlineUser.uid}
