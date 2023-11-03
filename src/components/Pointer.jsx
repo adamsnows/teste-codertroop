@@ -9,8 +9,6 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lastMousePositionTime, setLastMousePositionTime] = useState(0);
 
-  console.log(lastMousePositionTime);
-
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
 
