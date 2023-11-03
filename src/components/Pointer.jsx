@@ -8,6 +8,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const [userMouseEvents, setUserMouseEvents] = useState([]);
   const [position, setPosition] = useState([]);
   const [windowFocused, setWindowFocused] = useState(true);
+  console.log(windowFocused);
 
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
@@ -47,11 +48,8 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
         if (onlineUser.email === user.email) {
           return null;
         }
-        if (!windowFocused) {
-          return null;
-        }
 
-        if (isUserOnline) {
+        if (isUserOnline && !windowFocused) {
           return (
             <div
               key={onlineUser.uid}
