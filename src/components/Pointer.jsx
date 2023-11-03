@@ -49,7 +49,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
           return null;
         }
 
-        if (isUserOnline && !windowFocused) {
+        if (isUserOnline && windowFocused) {
           return (
             <div
               key={onlineUser.uid}
