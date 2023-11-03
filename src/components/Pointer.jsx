@@ -1,13 +1,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/services/firebase";
-import { ref, onValue, set, remove } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 import { useState, useEffect } from "react";
 
 const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const { user } = useAuth();
   const [userMouseEvents, setUserMouseEvents] = useState({});
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [lastMousePositionTime, setLastMousePositionTime] = useState(0);
 
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
@@ -21,15 +20,15 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
 
     const updateMousePosition = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
-      setLastMousePositionTime(new Date().getTime());
 
-      const userOnlineRef = ref(db, `mouseEvents/${user.uid}`);
-      set(userOnlineRef, {
-        email: user.email,
-        x: e.clientX,
-        y: e.clientY,
-        lastActive: new Date().getTime(),
-      });
+      if (isCurrentUser) {
+        const userOnlineRef = ref(db, `mouseEvents/${user.uid}`);
+        set(userOnlineRef, {
+          email: user.email,
+          x: e.clientX,
+          y: e.clientY,
+        });
+      }
     };
 
     window.addEventListener("mousemove", updateMousePosition);
@@ -43,25 +42,28 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const inactivityTimeout = 5000;
 
   useEffect(() => {
-    const checkInactivity = () => {
-      const currentTime = new Date().getTime();
-      for (const userId in userMouseEvents) {
-        if (userId !== user.uid) {
+    const inactivityInterval = setInterval(() => {
+      if (!isCurrentUser) {
+        // Verifique a inatividade dos outros usuários
+        const currentTime = new Date().getTime();
+        const updatedUserMouseEvents = { ...userMouseEvents };
+
+        for (const userId in userMouseEvents) {
           const userEvent = userMouseEvents[userId];
-          if (currentTime - userEvent.lastActive >= inactivityTimeout) {
-            delete userMouseEvents[userId];
-            setUserMouseEvents({ ...userMouseEvents });
+          if (currentTime - userEvent.timestamp >= inactivityTimeout) {
+            // Defina a posição para (0, 0) ou remova o usuário se preferir
+            updatedUserMouseEvents[userId] = { x: 0, y: 0 };
           }
         }
-      }
-    };
 
-    const inactivityInterval = setInterval(checkInactivity, 1000);
+        setUserMouseEvents(updatedUserMouseEvents);
+      }
+    }, 1000);
 
     return () => {
       clearInterval(inactivityInterval);
     };
-  }, [user, userMouseEvents]);
+  }, [isCurrentUser, userMouseEvents]);
 
   return (
     <>
