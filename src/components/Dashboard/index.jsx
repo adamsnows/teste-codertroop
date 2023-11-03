@@ -130,10 +130,12 @@ const TaskDashboard = () => {
   if (!user) return <></>;
   return (
     <div className="bg-slate-900 bg-opacity-90 p-14 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
-      <div className="flex justify-between gap-1 mb-10 w-full items-center">
+      <div className="flex justify-between gap-1 mb-5 w-full ">
         <div className="flex flex-col">
           <span className="text-2xl">TaskManager by CoderTroop</span>
-          <span className="font-thin">Lista de tarefas em tempo real.</span>
+          <span className="font-thin">
+            Lista de tarefas em tempo real criado por Adam Neves.
+          </span>
         </div>
         <div className="flex flex-col gap-2">
           <button
