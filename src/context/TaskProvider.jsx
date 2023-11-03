@@ -6,7 +6,7 @@ import { db } from "@/services/firebase";
 const TasksContext = createContext();
 
 export const TasksProvider = ({ children }) => {
-  const [tasks, setTasks] = useState([]); // Defina seus dados iniciais aqui
+  const [tasks, setTasks] = useState([]);
   const [addTask, setAddTask] = useState(false);
   const [seeTask, setSeeTask] = useState(false);
   const [editTask, setEditTask] = useState(false);

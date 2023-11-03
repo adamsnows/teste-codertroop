@@ -35,11 +35,11 @@ export default function App({ Component, pageProps }) {
     if (!loading) {
       if (isAuthenticated) {
         if (router.pathname === "/" || router.pathname === "/register") {
-          router.push("/dashboard"); // Redirecione para a dashboard se estiver autenticado
+          router.push("/dashboard");
         }
       } else {
         if (router.pathname !== "/" && router.pathname !== "/register") {
-          router.push("/"); // Redirecione para a página inicial se não estiver autenticado
+          router.push("/");
         }
       }
     }
@@ -51,7 +51,6 @@ export default function App({ Component, pageProps }) {
         <Component {...pageProps} />
         <ToastContainer
           theme="dark"
-          autoClose={1}
           limit={1}
           toastStyle={{
             backgroundColor: "rgb(15, 23, 42, 0.9)",

@@ -14,6 +14,7 @@ import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import CompleteModal from "../Modal/Complete";
 import MouseCursor from "../Pointer";
+import { toast } from "react-toastify";
 
 const TaskDashboard = () => {
   const {
@@ -62,38 +63,6 @@ const TaskDashboard = () => {
     });
   }, []);
 
-  let inactivityTimeout;
-
-  const handleInactivity = () => {
-    if (inactivityTimeout) {
-      clearTimeout(inactivityTimeout);
-    }
-
-    inactivityTimeout = setTimeout(() => {
-      handleLogout();
-    }, 10 * 60 * 1000);
-  };
-
-  handleInactivity();
-
-  useEffect(() => {
-    if (typeof document !== "undefined" && user) {
-      document.addEventListener("click", handleInactivity);
-    }
-
-    return () => {
-      if (typeof document !== "undefined" && user) {
-        document.removeEventListener("click", handleInactivity);
-      }
-    };
-  }, [user]);
-
-  const clearInactivityTimeout = () => {
-    if (inactivityTimeout) {
-      clearTimeout(inactivityTimeout);
-    }
-  };
-
   const handleLogout = async () => {
     const auth = getAuth();
 
@@ -108,12 +77,39 @@ const TaskDashboard = () => {
     deleteCookie("user-email");
     deleteCookie("token");
 
-    clearInactivityTimeout();
-
     await signOut(auth);
 
     router.push("/");
   };
+
+  useEffect(() => {
+    let timer;
+
+    const sessionTimeout = 60000;
+
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        handleLogout();
+        toast.info("Sua sessão expirou devido à inatividade.");
+        router.push("/");
+      }, sessionTimeout);
+    };
+
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("mousedown", resetTimer);
+    window.addEventListener("keypress", resetTimer);
+
+    resetTimer();
+
+    return () => {
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("mousedown", resetTimer);
+      window.removeEventListener("keypress", resetTimer);
+
+      clearTimeout(timer);
+    };
+  }, [router]);
 
   const handleAddModal = () => {
     setAddTask(true);
