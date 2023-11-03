@@ -201,18 +201,15 @@ const TaskDashboard = () => {
       />
 
       {onlineUsers &&
-        onlineUsers.map(
-          (onlineUser) =>
-            onlineUser.uid !== user.uid && (
-              <MouseCursor
-                key={onlineUser.uid}
-                username={onlineUser.email}
-                userMouseEvents={userMouseEvents}
-                isCurrentUser={onlineUser.email === user.email}
-                isUserOnline={onlineUser.online}
-              />
-            )
-        )}
+        onlineUsers.map((onlineUser) => (
+          <MouseCursor
+            key={onlineUser.uid}
+            username={onlineUser.email}
+            userMouseEvents={userMouseEvents}
+            isCurrentUser={onlineUser.email === user.email}
+            isUserOnline={onlineUser.online}
+          />
+        ))}
     </div>
   );
 };

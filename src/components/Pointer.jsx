@@ -1,10 +1,12 @@
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/services/firebase";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, set } from "firebase/database";
 import { useState, useEffect } from "react";
 
 const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
+  const { user } = useAuth();
   const [userMouseEvents, setUserMouseEvents] = useState([]);
+  const [position, setPosition] = useState([]);
 
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
@@ -18,12 +20,38 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
     });
   }, []);
 
-  const mustDisplay = isUserOnline && !isCurrentUser;
+  useEffect(() => {
+    const updateMousePosition = (e) => {
+      setPosition({ x: e.clientX, y: e.clientY });
+
+      const userOnlineRef = ref(db, `mouseEvents/${user.uid}`);
+      set(userOnlineRef, {
+        email: user.email,
+        x: e.clientX,
+        y: e.clientY,
+      });
+    };
+
+    window.addEventListener("mousemove", updateMousePosition);
+
+    return () => {
+      window.removeEventListener("mousemove", updateMousePosition);
+    };
+  }, [user, position]);
 
   return (
     <>
       {userMouseEvents.map((onlineUser) => {
-        if (mustDisplay) {
+        console.log("onlineUser", onlineUser.email);
+        console.log("user logado", user.email);
+        console.log("é o proprio usuário", isCurrentUser);
+        console.log("-----------------------");
+
+        if (onlineUser.email == user.email) {
+          return null;
+        }
+
+        if (isUserOnline) {
           return (
             <div
               key={onlineUser.uid}
