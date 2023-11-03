@@ -42,11 +42,6 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   return (
     <>
       {userMouseEvents.map((onlineUser) => {
-        console.log("onlineUser", onlineUser.email);
-        console.log("user logado", user.email);
-        console.log("é o proprio usuário", isCurrentUser);
-        console.log("-----------------------");
-
         if (onlineUser.email == user.email) {
           return null;
         }
