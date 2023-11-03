@@ -1,34 +1,13 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import { toast } from "react-toastify";
 import { onValue, ref } from "firebase/database";
 import { db } from "@/services/firebase";
+import { useTasksContext } from "@/context/TaskProvider";
 
 const OnlineUsersModal = ({ open, setOpen }) => {
   const cancelButtonRef = useRef(null);
-  const [onlineUsers, setOnlineUsers] = useState([]);
-
-  useEffect(() => {
-    const onlineUsersRef = ref(db, "onlineUsers");
-
-    const unsubscribe = onValue(onlineUsersRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const onlineUsersData = snapshot.val();
-
-        const onlineUsersList = Object.keys(onlineUsersData).map((userId) => ({
-          email: onlineUsersData[userId].email,
-          online: onlineUsersData[userId].online,
-        }));
-
-        setOnlineUsers(onlineUsersList);
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [setOnlineUsers]);
+  const { onlineUsers } = useTasksContext();
+  console.log(onlineUsers);
 
   return (
     <Transition.Root show={open} as={Fragment}>
@@ -82,26 +61,27 @@ const OnlineUsersModal = ({ open, setOpen }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {onlineUsers.map((user) => (
-                        <tr
-                          className="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
-                          key={user.email}
-                        >
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                      {onlineUsers &&
+                        onlineUsers.map((user) => (
+                          <tr
+                            className="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700"
+                            key={user.email}
                           >
-                            {user.email}
-                          </th>
-                          <td className="px-6 py-4 flex items-center justify-end me-3 mt-1">
-                            <div
-                              className={`h-3 w-3 ${
-                                user.online ? "bg-green-700" : "bg-red-500"
-                              } rounded-full`}
-                            />
-                          </td>
-                        </tr>
-                      ))}
+                            <th
+                              scope="row"
+                              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                            >
+                              {user.email}
+                            </th>
+                            <td className="px-6 py-4 flex items-center justify-end me-3 mt-1">
+                              <div
+                                className={`h-3 w-3 ${
+                                  user.online ? "bg-green-700" : "bg-red-500"
+                                } rounded-full`}
+                              />
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>

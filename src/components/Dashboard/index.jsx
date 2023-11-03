@@ -3,14 +3,14 @@ import AddTaskModal from "../Modal/Add";
 import EditTaskModal from "../Modal/Edit";
 import OnlineUsersModal from "../Modal/Users";
 import FiltersModal from "../Modal/Filters";
-import { db, ref, onValue, set } from "@/services/firebase";
+import { db, ref, onValue, set, remove } from "@/services/firebase";
 import SeeTask from "../Modal/Task";
 import TasksList from "./List";
 import DeleteModal from "../Modal/Delete";
 import { useTasksContext } from "@/context/TaskProvider";
 import { useAuth } from "@/context/AuthContext";
 import { getAuth, signOut } from "firebase/auth";
-import { deleteCookie } from "cookies-next";
+import { deleteCookie, getCookie } from "cookies-next";
 import { useRouter } from "next/router";
 import CompleteModal from "../Modal/Complete";
 import MouseCursor from "../Pointer";
@@ -36,11 +36,15 @@ const TaskDashboard = () => {
     setCompletedTask,
     filteredTasks,
     applyFilter,
+    openUsers,
+    setOpenUsers,
   } = useTasksContext();
 
   const { user } = useAuth();
 
   const router = useRouter();
+
+  console.log(onlineUsers);
 
   useEffect(() => {
     applyFilter("all");
@@ -69,7 +73,7 @@ const TaskDashboard = () => {
 
     inactivityTimeout = setTimeout(() => {
       handleLogout();
-    }, 10 * 60 * 1000);
+    }, 10 * 60 * 10000);
   };
 
   handleInactivity();
@@ -95,10 +99,12 @@ const TaskDashboard = () => {
   const handleLogout = async () => {
     const auth = getAuth();
 
-    const userId = user.uid;
-    const userEmail = user.email;
+    const userId = user?.uid;
+    const userEmail = user?.email;
 
     const userOnlineRef = ref(db, `onlineUsers/${userId}`);
+    const mouseEventsRef = ref(db, `mouseEvents/${userId}`);
+    await remove(mouseEventsRef);
     await set(userOnlineRef, { online: false, email: userEmail });
 
     deleteCookie("user-email");
@@ -116,13 +122,15 @@ const TaskDashboard = () => {
   };
 
   const handleUsersModal = () => {
-    setOnlineUsers(true);
+    setOpenUsers(true);
   };
 
   const handleFiltersModal = () => {
     setFilters(true);
   };
 
+  if (!user) return <></>;
+  console.log(onlineUsers);
   return (
     <div className="bg-slate-900 bg-opacity-90 p-14 rounded-lg flex flex-col gap-4 min-h-[300px] w-5/6 max-w-[1600px]">
       <div className="flex justify-between gap-1 mb-10 w-full items-center">
@@ -183,7 +191,7 @@ const TaskDashboard = () => {
         setOpen={setDeleteTask}
         task={selectedTask}
       />
-      <OnlineUsersModal open={onlineUsers} setOpen={setOnlineUsers} />
+      <OnlineUsersModal open={openUsers} setOpen={setOpenUsers} />
       <FiltersModal
         open={filters}
         setOpen={setFilters}
@@ -195,7 +203,18 @@ const TaskDashboard = () => {
         task={selectedTask}
       />
 
-      {user && <MouseCursor username={user.email} />}
+      {onlineUsers &&
+        onlineUsers.map(
+          (onlineUser) =>
+            onlineUser.uid !== user.uid && (
+              <MouseCursor
+                key={onlineUser.uid}
+                username={onlineUser.email}
+                isCurrentUser={onlineUser.email === user.email}
+                isUserOnline={onlineUser.online}
+              />
+            )
+        )}
     </div>
   );
 };

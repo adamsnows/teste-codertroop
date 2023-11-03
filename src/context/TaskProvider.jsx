@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
+import { onValue, ref } from "firebase/database";
+import { db } from "@/services/firebase";
 
 const TasksContext = createContext();
 
@@ -9,11 +11,12 @@ export const TasksProvider = ({ children }) => {
   const [seeTask, setSeeTask] = useState(false);
   const [editTask, setEditTask] = useState(false);
   const [deleteTask, setDeleteTask] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState(false);
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [filters, setFilters] = useState(false);
   const [completedTask, setCompletedTask] = useState(false);
   const [selectedTask, setSelectedTask] = useState({});
   const [filteredTasks, setFilteredTasks] = useState(tasks);
+  const [openUsers, setOpenUsers] = useState(false);
 
   const { user } = useAuth();
 
@@ -34,6 +37,27 @@ export const TasksProvider = ({ children }) => {
         break;
     }
   };
+
+  useEffect(() => {
+    const onlineUsersRef = ref(db, "onlineUsers");
+
+    const unsubscribe = onValue(onlineUsersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const onlineUsersData = snapshot.val();
+
+        const onlineUsersList = Object.keys(onlineUsersData).map((userId) => ({
+          email: onlineUsersData[userId].email,
+          online: onlineUsersData[userId].online,
+        }));
+
+        setOnlineUsers(onlineUsersList);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [setOnlineUsers]);
 
   return (
     <TasksContext.Provider
@@ -59,6 +83,8 @@ export const TasksProvider = ({ children }) => {
         applyFilter,
         filteredTasks,
         setFilteredTasks,
+        openUsers,
+        setOpenUsers,
       }}
     >
       {children}
