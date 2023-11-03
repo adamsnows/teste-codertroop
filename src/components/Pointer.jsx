@@ -7,6 +7,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const { user } = useAuth();
   const [userMouseEvents, setUserMouseEvents] = useState([]);
   const [position, setPosition] = useState([]);
+  const [windowFocused, setWindowFocused] = useState(true);
 
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
@@ -18,9 +19,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
         setUserMouseEvents(userMouseEventsArray);
       }
     });
-  }, []);
 
-  useEffect(() => {
     const updateMousePosition = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
 
@@ -32,6 +31,9 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
       });
     };
 
+    window.addEventListener("focus", () => setWindowFocused(true));
+    window.addEventListener("blur", () => setWindowFocused(false));
+
     window.addEventListener("mousemove", updateMousePosition);
 
     return () => {
@@ -42,7 +44,10 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   return (
     <>
       {userMouseEvents.map((onlineUser) => {
-        if (onlineUser.email == user.email) {
+        if (onlineUser.email === user.email) {
+          return null;
+        }
+        if (!windowFocused) {
           return null;
         }
 
