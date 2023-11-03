@@ -1,40 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# CoderTroop Task Manager
 
-## Getting Started
+## Descrição
+Este é um projeto de um gerenciador de tarefas construído com Next.js, Tailwind CSS e Firebase. O CoderTroop Task Manager permite que você crie, visualize e gerencie suas tarefas de forma eficiente.
 
-First, run the development server:
+## Pré-requisitos
+Antes de executar o projeto, certifique-se de ter as seguintes ferramentas instaladas:
 
-```bash
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
+- [Firebase CLI](https://firebase.google.com/docs/cli)
+
+## Instalação
+Siga estas etapas para executar o projeto localmente:
+
+1. Clone o repositório:
+```git clone https://github.com/seu-usuario/codertroop-task-manager.git```
+
+2. Navegue até o diretório do projeto:
+
+```cd teste-codertroop```
+
+3. Instale as dependências: ```npm install```
+
+4. Execução
+Após a configuração, você pode iniciar o projeto localmente com o seguinte comando:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+O aplicativo estará disponível em http://localhost:3000.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Estratégia de Desenvolvimento
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+Durante a criação deste projeto, adotei uma abordagem cuidadosa na escolha das tecnologias e implementações, visando oferecer uma experiência de usuário fluida e eficiente. Eis como o projeto foi desenvolvido:
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### Escolha das Tecnologias
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Inicialmente, optei por utilizar Tailwind CSS em conjunto com Styled Components para estilização. No entanto, encontrei alguns conflitos que resultaram em bugs, levando à decisão de continuar apenas com o Tailwind CSS. Essa escolha permitiu uma estilização consistente e eficaz em todo o projeto.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Integração com Firebase Realtime Database
 
-## Learn More
+Para o gerenciamento dos dados do aplicativo, fiz uso do Firebase Realtime Database. Neste banco de dados, criei várias coleções para armazenar informações vitais do aplicativo, incluindo:
 
-To learn more about Next.js, take a look at the following resources:
+- **Movimento do Mouse**: Desenvolvi uma função que coleta em tempo real as coordenadas X e Y dos movimentos do mouse dos usuários, utilizando as capacidades de tempo real do Firebase. Em seguida, criei um componente que se move com base nas coordenadas X e Y de cada usuário, proporcionando uma experiência interativa única.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Usuários Online e Total de Usuários**: Registrei informações sobre os usuários online e o total de usuários ativos, fornecendo visibilidade em tempo real da presença e atividade dos usuários.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- **Tasks (Tarefas)**: As tarefas do aplicativo foram gerenciadas em uma coleção separada. Para garantir uma experiência colaborativa e eficiente, implementei as seguintes regras:
 
-## Deploy on Vercel
+  - **Criador da Tarefa**: Os criadores das tarefas têm o poder de editar, apagar e marcar uma tarefa como concluída.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  - **Pessoa Atribuída a uma Tarefa por Outra Pessoa**: Quando uma tarefa é atribuída a um usuário por outra pessoa, esse usuário tem permissão para marcar a tarefa como concluída.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+  - **Tarefas Concluídas**: Tarefas que já foram marcadas como concluídas não podem ser mais editadas ou re-marcadas como concluídas. A exclusão de tarefas concluídas só pode ser realizada pelo seu criador.
+
+### Toast e Limite de Tempo de Inatividade
+
+Implementei uma funcionalidade de toast para fornecer feedback aos usuários a cada ação realizada, mantendo-os informados sobre o estado das tarefas e das interações. Além disso, estabeleci um limite de tempo de 10 minutos para a inatividade. Caso um usuário fique inativo por mais de 10 minutos, o sistema o desconectará automaticamente, garantindo a segurança e eficiência do aplicativo.
+
+Essa estratégia de implementação permitiu a criação de um gerenciador de tarefas dinâmico e interativo, oferecendo recursos essenciais para colaboração e rastreamento de tarefas, juntamente com um ambiente seguro e responsivo para os usuários.
+
+
+__Adam Neves__
