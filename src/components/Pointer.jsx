@@ -1,13 +1,15 @@
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/services/firebase";
-import { ref, onValue, set } from "firebase/database";
+import { ref, onValue, set, remove } from "firebase/database";
 import { useState, useEffect } from "react";
 
 const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   const { user } = useAuth();
-  const [userMouseEvents, setUserMouseEvents] = useState([]);
+  const [userMouseEvents, setUserMouseEvents] = useState({});
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lastMousePositionTime, setLastMousePositionTime] = useState(0);
+
+  console.log(lastMousePositionTime);
 
   useEffect(() => {
     const userMouseEventsRef = ref(db, "mouseEvents");
@@ -15,8 +17,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
     onValue(userMouseEventsRef, (snapshot) => {
       if (snapshot.exists()) {
         const userMouseEventsData = snapshot.val();
-        const userMouseEventsArray = Object.values(userMouseEventsData);
-        setUserMouseEvents(userMouseEventsArray);
+        setUserMouseEvents(userMouseEventsData);
       }
     });
 
@@ -29,6 +30,7 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
         email: user.email,
         x: e.clientX,
         y: e.clientY,
+        lastActive: new Date().getTime(),
       });
     };
 
@@ -45,8 +47,17 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
   useEffect(() => {
     const checkInactivity = () => {
       const currentTime = new Date().getTime();
-      if (currentTime - lastMousePositionTime >= inactivityTimeout) {
-        setPosition({ x: 0, y: 0 }); // Define a posição para fora da tela ou oculta
+      for (const userId in userMouseEvents) {
+        if (userId !== user.uid) {
+          const userEvent = userMouseEvents[userId];
+          if (currentTime - userEvent.lastActive >= inactivityTimeout) {
+            // Usuário inativo, você pode optar por remover seu cursor
+            // do estado para que ele não seja renderizado
+            // ou definir suas coordenadas para fora da tela
+            delete userMouseEvents[userId];
+            setUserMouseEvents({ ...userMouseEvents });
+          }
+        }
       }
     };
 
@@ -55,30 +66,31 @@ const MouseCursor = ({ isCurrentUser, isUserOnline }) => {
     return () => {
       clearInterval(inactivityInterval);
     };
-  }, [lastMousePositionTime]);
+  }, [user, userMouseEvents]);
 
   return (
     <>
-      {userMouseEvents.map((onlineUser) => {
-        if (onlineUser.email === user.email) {
+      {Object.values(userMouseEvents).map((onlineUser) => {
+        if (
+          onlineUser.email === user.email ||
+          onlineUser.x === 0 ||
+          onlineUser.y === 0
+        ) {
           return null;
         }
 
-        if (isUserOnline && onlineUser.x !== 0 && onlineUser.y !== 0) {
-          return (
-            <div
-              key={onlineUser.uid}
-              className="mouse-cursor"
-              style={{ left: onlineUser.x, top: onlineUser.y }}
-            >
-              <div className="ms-[-7px] mt-[-4px] bg-slate-600 w-2 h-2 rounded-full " />
-              <span className=" text-xs py-1 px-3 rounded bg-slate-900 bg-opacity-80">
-                {onlineUser.email.replace(/@.+$/, "")}
-              </span>
-            </div>
-          );
-        }
-        return null;
+        return (
+          <div
+            key={onlineUser.uid}
+            className="mouse-cursor"
+            style={{ left: onlineUser.x, top: onlineUser.y }}
+          >
+            <div className="ms-[-7px] mt-[-4px] bg-slate-600 w-2 h-2 rounded-full " />
+            <span className="text-xs py-1 px-3 rounded bg-slate-900 bg-opacity-80">
+              {onlineUser.email.replace(/@.+$/, "")}
+            </span>
+          </div>
+        );
       })}
     </>
   );
